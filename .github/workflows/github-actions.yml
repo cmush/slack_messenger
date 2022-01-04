@@ -50,6 +50,6 @@ jobs:
       #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       #     # GIGALIXIR_CLEAN: true # defaults to false
       - run: "echo ${{ secrets.SSH_PRIVATE_KEY }}"
-      - run: "echo ${{ secrets.SSH_PRIVATE_KEY }} > slack-messenger"
+      # - run: "echo ${{ secrets.SSH_PRIVATE_KEY }} > slack-messenger"
       # - run: "gigalixir ps:migrate --ssh_opts '-i slack-messenger'"
       # - run: "rm slack-messenger"
