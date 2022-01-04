@@ -54,5 +54,5 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           echo $SSH_PRIVATE_KEY > slack-messenger
-          gigalixir ps:migrate --ssh_opts '-i slack-messenger'
+          gigalixir ps:migrate --ssh_opts '-T -i slack-messenger'
           rm slack-messenger
