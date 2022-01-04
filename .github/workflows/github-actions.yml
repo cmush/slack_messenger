@@ -26,8 +26,9 @@ jobs:
       - run: mix deps.get
       - run: mix test
 
-  Explore-GitHub-Actions:
+  deploy:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
