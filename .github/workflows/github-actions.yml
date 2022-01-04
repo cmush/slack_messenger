@@ -6,7 +6,7 @@ jobs:
 
     services:
       db:
-        image: postgres:11
+        image: postgres:14.1
         ports: ['5432:5432']
         env:
           POSTGRES_PASSWORD: postgres
@@ -22,6 +22,7 @@ jobs:
         with:
           otp-version: '24.1'
           elixir-version: '1.12.3'
+          experimental-otp: true
       - run: mix deps.get
       - run: mix test
 
