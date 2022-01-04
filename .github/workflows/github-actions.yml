@@ -53,7 +53,7 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo SSH_PRIVATE_KEY > slack-messenger
+          echo $SSH_PRIVATE_KEY > slack-messenger
           cat slack-messenger
           rm slack-messenger
       # - run: "gigalixir ps:migrate --ssh_opts '-i slack-messenger'"
