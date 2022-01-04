@@ -33,7 +33,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9.9
-      - uses: mhanberg/gigalixir-action@0.6.0
+      - uses: mhanberg/gigalixir-action@0.4.0
         with:
           GIGALIXIR_APP: ${{ secrets.GIGALIXIR_APP }}
           GIGALIXIR_CLEAN: true # defaults to false
