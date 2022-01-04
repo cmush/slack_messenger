@@ -1,35 +1,35 @@
 name: Test & Deploy Slack Messenger
 on: [push, pull_request]
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
 
-  #   services:
-  #     db:
-  #       image: postgres:14.1
-  #       ports: ['5432:5432']
-  #       env:
-  #         POSTGRES_PASSWORD: postgres
-  #       options: >-
-  #         --health-cmd pg_isready
-  #         --health-interval 10s
-  #         --health-timeout 5s
-  #         --health-retries 5
+    services:
+      db:
+        image: postgres:14.1
+        ports: ['5432:5432']
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-elixir@v1
-  #       with:
-  #         otp-version: '24.1'
-  #         elixir-version: '1.12.3'
-  #         experimental-otp: true
-  #     - run: mix deps.get
-  #     - run: mix test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1
+        with:
+          otp-version: '24.1'
+          elixir-version: '1.12.3'
+          experimental-otp: true
+      - run: mix deps.get
+      - run: mix test
 
   deploy:
     if: github.ref == 'refs/heads/master' # Only run this job if it is on the main branch
     runs-on: ubuntu-latest
-    # needs: test
+    needs: test
     environment: development
     steps:
       - name: Checkout the code
@@ -46,6 +46,6 @@ jobs:
           GIGALIXIR_APP: ${{ secrets.GIGALIXIR_APP }}
           GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
           GIGALIXIR_PASSWORD: ${{ secrets.GIGALIXIR_PASSWORD }}
-          MIGRATIONS: true # defaults to true
+          MIGRATIONS: false # defaults to true
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # GIGALIXIR_CLEAN: true # defaults to false
