@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: 3.9.9
       - name: Gigalixir Action
-        uses: mhanberg/gigalixir-action@v0.4.0
+        uses: mhanberg/gigalixir-action@v0.6.0
         with:
           GIGALIXIR_APP: ${{ secrets.GIGALIXIR_APP }}
           GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
