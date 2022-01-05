@@ -34,6 +34,12 @@ defmodule SlackMessengerWeb.MessageLive.Index do
     |> assign(:slack_channel_id, slack_channel_id)
   end
 
+  defp apply_action(socket, :index, _params) do
+    socket
+    |> assign(:page_title, "Listing Messages")
+    |> assign(:message, nil)
+  end
+
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     message = Messages.get_message!(id)

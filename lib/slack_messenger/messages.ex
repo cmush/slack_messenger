@@ -7,6 +7,7 @@ defmodule SlackMessenger.Messages do
   alias SlackMessenger.Repo
 
   alias SlackMessenger.Messages.Message
+  alias SlackMessenger.SlackApiClient
 
   @doc """
   Returns the list of messages.
@@ -53,6 +54,15 @@ defmodule SlackMessenger.Messages do
     %Message{}
     |> Message.changeset(attrs)
     |> Repo.insert()
+    |> post_to_slack(attrs)
+  end
+
+  defp post_to_slack({:ok, %Message{subject: subject, body: body}} = response, %{
+         "slack_channel_id" => slack_channel_id
+       }) do
+    slack_channel_id |> SlackApiClient.post_message("subject: #{subject}; body: #{body}")
+
+    response
   end
 
   @doc """
