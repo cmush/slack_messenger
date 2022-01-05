@@ -4,6 +4,7 @@ defmodule SlackMessenger.Application do
   @moduledoc false
 
   use Application
+  alias SlackMessenger.Utils.EnvVars
 
   @impl true
   def start(_type, _args) do
@@ -15,9 +16,14 @@ defmodule SlackMessenger.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: SlackMessenger.PubSub},
       # Start the Endpoint (http/https)
-      SlackMessengerWeb.Endpoint
+      SlackMessengerWeb.Endpoint,
       # Start a worker by calling: SlackMessenger.Worker.start_link(arg)
       # {SlackMessenger.Worker, arg}
+      # Start a worker by calling: SlackMessenger.Worker.start_link(arg)
+      SlackMessenger.HttpClient.child_spec(%{
+        base_url: EnvVars.slack_base_url(),
+        pool_size: EnvVars.slack_pool_size()
+      })
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -83,3 +83,14 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 end
+
+bot_oauth_token =
+  System.get_env("SLACK_API_BOT_USER_OAUTH_TOKEN") ||
+    raise """
+    environment variable SLACK_API_BOT_USER_OAUTH_TOKEN is missing.
+    """
+
+config :slack_messenger,
+  base_url: System.get_env("SLACK_API_BASE_URL") || "http://localhost:4000",
+  pool_size: String.to_integer(System.get_env("SLACK_API_POOL_SIZE") || "25"),
+  bot_oauth_token: bot_oauth_token

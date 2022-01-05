@@ -50,7 +50,7 @@ defmodule SlackMessenger.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:finch, "~> 0.10.1"},
-      {:multipart, "~> 0.2.0"},
+      {:multipart, "~> 0.2.0"}
     ]
   end
 
