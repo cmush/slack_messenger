@@ -4,10 +4,12 @@ defmodule SlackMessenger.Utils.HTTPHelpers do
   # alias Calendar.DateTime.Format
 
   @spec set_headers :: [{<<_::64, _::_*8>>, binary}, ...]
-  def set_headers() do
-    [
-      {"Content-Type", "application/json"}
-    ]
+  def set_headers(), do: set_headers([])
+
+  def set_headers(headers) when is_list(headers) do
+    request_headers = [{"Authorization", bearer_token()}] ++ headers
+    Logger.debug("#{__MODULE__}.set_headers/1 url = #{inspect(request_headers)}")
+    request_headers
   end
 
   def build_json_body(map) when is_map(map) do
@@ -31,4 +33,6 @@ defmodule SlackMessenger.Utils.HTTPHelpers do
   def decode_json_body(body) when is_binary(body), do: Jason.decode(body) |> decode_json_body()
   def decode_json_body({:ok, json_map}), do: json_map
   def decode_json_body({:error, error}), do: IO.inspect(error, label: "decode_json_body/1 error")
+
+  def bearer_token(), do: "Bearer #{EnvVars.slack_bot_oauth_token()}"
 end

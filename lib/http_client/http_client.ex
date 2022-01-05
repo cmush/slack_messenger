@@ -1,15 +1,15 @@
 defmodule SlackMessenger.HttpClient do
   alias Finch.Response
   require Logger
-  alias SlackMessenger.Utils.HTTPHelpers
-  alias Multipart.Part
+  import SlackMessenger.Utils.HTTPHelpers
+  # alias Multipart.Part
 
   @doc """
   - defines the child spec for the Finch connection pool
   - allows us to start up our Finch connection pool from
   """
   @spec child_spec(any) ::
-          {Finch, [{:name, FunctionalLangs.HackerNewsClient} | {:pools, map}, ...]}
+          {Finch, [{:name, SlackMessenger.HttpClient} | {:pools, map}, ...]}
   def child_spec(args) do
     Logger.info(
       "HttpClient.child_spec/1 Starting the slack_api_wrapper http client with a pool of #{inspect(args.pool_size)} connections"
@@ -36,41 +36,23 @@ defmodule SlackMessenger.HttpClient do
   def get(api_method) when is_binary(api_method) do
     :get
     |> Finch.build(
-      HTTPHelpers.build_url(api_method),
-      HTTPHelpers.set_headers()
+      build_url(api_method),
+      set_headers()
     )
     |> Finch.request(__MODULE__)
     |> parse_http_client_response("get/1")
   end
 
-  def post(api_method, body) when is_binary(api_method) and is_map(body) do
+  def post(api_method, body, headers \\ [{"Content-Type", "application/json"}])
+      when is_binary(api_method) and is_list(headers) and is_map(body) do
     :post
     |> Finch.build(
-      HTTPHelpers.build_url(api_method),
-      HTTPHelpers.set_headers(),
-      HTTPHelpers.build_json_body(body)
+      build_url(api_method),
+      set_headers(headers),
+      build_json_body(body)
     )
     |> Finch.request(__MODULE__)
     |> parse_http_client_response("post/2")
-  end
-
-  def post_multipart_form(api_method, track_id, file_path) do
-    multipart =
-      Multipart.new()
-      |> Multipart.add_part(Part.text_field(track_id, :track_id))
-      |> Multipart.add_part(Part.file_field(file_path, :file))
-
-    :post
-    |> Finch.build(
-      HTTPHelpers.build_url(api_method),
-      [
-        {"Content-Type", Multipart.content_type(multipart, "multipart/form-data")}
-        # {"Content-Length", Multipart.content_length(multipart)}
-      ],
-      {:stream, Multipart.body_stream(multipart)}
-    )
-    |> Finch.request(__MODULE__)
-    |> parse_http_client_response("post_multipart_form/2")
   end
 
   defp parse_http_client_response(response, http_client_method)
@@ -84,7 +66,7 @@ defmodule SlackMessenger.HttpClient do
         )
 
       {:ok, %Response{headers: headers, body: body, status: status}} ->
-        decoded_json_body = body |> HTTPHelpers.decode_json_body()
+        decoded_json_body = body |> decode_json_body()
 
         Logger.debug(
           "#{__MODULE__}.#{http_client_method}'s response headers = #{inspect(headers)}"
