@@ -19,7 +19,9 @@
       <td><%= channel.name %></td>
 
       <td>
-        <span><button class="btn" phx-click="open">Open</button></span>
+        <span>
+          <button class="btn" phx-click="open" phx-value-channel_id={ channel.id }>Open</button>
+        </span>
       </td>
     </tr>
     <% end %>
