@@ -43,13 +43,29 @@ defmodule SlackMessenger.HttpClient do
     |> parse_http_client_response("get/1")
   end
 
-  def post(api_method, body, headers \\ [{"Content-Type", "application/json"}])
+  def post_application_json(api_method, body, headers \\ [{"Content-Type", "application/json"}])
       when is_binary(api_method) and is_list(headers) and is_map(body) do
     :post
     |> Finch.build(
       build_url(api_method),
       set_headers(headers),
       build_json_body(body)
+    )
+    |> Finch.request(__MODULE__)
+    |> parse_http_client_response("post/2")
+  end
+
+  def post_application_x_www_form_urlencoded(
+        api_method,
+        body,
+        headers \\ [{"Content-Type", "application/x-www-form-urlencoded"}]
+      )
+      when is_binary(api_method) and is_list(headers) and is_map(body) do
+    :post
+    |> Finch.build(
+      build_url(api_method),
+      set_headers(headers),
+      build_url_encoded_body(body)
     )
     |> Finch.request(__MODULE__)
     |> parse_http_client_response("post/2")

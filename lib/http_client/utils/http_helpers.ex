@@ -15,12 +15,27 @@ defmodule SlackMessenger.Utils.HTTPHelpers do
   def build_json_body(map) when is_map(map) do
     case Jason.encode(map) do
       {:ok, json_body} ->
+        Logger.debug("#{__MODULE__}.build_json_body/1 json_body = #{inspect(json_body)}")
         json_body
 
       error ->
         Logger.error("#{__MODULE__}.build_json_body/1 error = #{inspect(error)}")
         :invalid_body
     end
+  end
+
+  def build_url_encoded_body(map) when is_map(map) do
+    url_encoded_body =
+      map
+      |> Enum.map_join("&", fn {key, value} ->
+        "#{key}=#{value}"
+      end)
+
+    Logger.debug(
+      "#{__MODULE__}.build_url_encoded_body/1 url_encoded_body = #{inspect(url_encoded_body)}"
+    )
+
+    url_encoded_body
   end
 
   def build_url(method) when is_binary(method) do

@@ -106,9 +106,7 @@ defmodule SlackMessenger.Messages do
         %Message{ts: message_timestamp, channel: %Channel{slack_channel_id: slack_channel_id}} =
           message
       ) do
-    SlackApiClient.delete_message(slack_channel_id, message_timestamp)
-    |> IO.inspect(label: "SlackApiClient.delete_message")
-
+    %Response{} = SlackApiClient.delete_message(slack_channel_id, message_timestamp)
     Repo.delete(message)
   end
 
