@@ -8,5 +8,7 @@ defmodule SlackMessenger.Repo.Migrations.CreateChannels do
 
       timestamps()
     end
+
+    create unique_index(:channels, [:slack_channel_id])
   end
 end
