@@ -7,6 +7,8 @@ defmodule SlackMessenger.Channels.Channel do
     field :slack_channel_id, :string
 
     timestamps()
+
+    has_many :messages, SlackMessenger.Messages.Message
   end
 
   @doc false
