@@ -1,0 +1,41 @@
+<h1>Listing Channels</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.channel_index_path(@socket, :index)}>
+    <.live_component
+      module={SlackMessengerWeb.ChannelLive.FormComponent}
+      id={@channel.id || :new}
+      title={@page_title}
+      action={@live_action}
+      channel={@channel}
+      return_to={Routes.channel_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Slack channel</th>
+      <th>Name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="channels">
+    <%= for channel <- @channels do %>
+      <tr id={"channel-#{channel.id}"}>
+        <td><%= channel.slack_channel_id %></td>
+        <td><%= channel.name %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.channel_show_path(@socket, :show, channel) %></span>
+          <span><%= live_patch "Edit", to: Routes.channel_index_path(@socket, :edit, channel) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: channel.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Channel", to: Routes.channel_index_path(@socket, :new) %></span>

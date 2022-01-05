@@ -1,0 +1,31 @@
+<h1>Show Channel</h1>
+
+<%= if @live_action in [:edit] do %>
+  <.modal return_to={Routes.channel_show_path(@socket, :show, @channel)}>
+    <.live_component
+      module={SlackMessengerWeb.ChannelLive.FormComponent}
+      id={@channel.id}
+      title={@page_title}
+      action={@live_action}
+      channel={@channel}
+      return_to={Routes.channel_show_path(@socket, :show, @channel)}
+    />
+  </.modal>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Slack channel:</strong>
+    <%= @channel.slack_channel_id %>
+  </li>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @channel.name %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.channel_show_path(@socket, :edit, @channel), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.channel_index_path(@socket, :index) %></span>
