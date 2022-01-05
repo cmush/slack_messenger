@@ -43,6 +43,7 @@ defmodule SlackMessengerWeb.MessageLive.FormComponent do
   defp save_message(socket, :new, message_params) do
     message_params =
       message_params
+      |> Map.put("channel_id", socket.assigns.channel_id)
       |> Map.put("slack_channel_id", socket.assigns.slack_channel_id)
 
     case Messages.create_message(message_params) do

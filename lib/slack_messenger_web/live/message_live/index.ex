@@ -5,7 +5,11 @@ defmodule SlackMessengerWeb.MessageLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket |> assign(:messages, list_messages()) |> assign(slack_channel_id: nil)}
+    {:ok,
+     socket
+     |> assign(:messages, list_messages())
+     |> assign(slack_channel_id: nil)
+     |> assign(channel_id: nil)}
   end
 
   @impl true
@@ -32,6 +36,7 @@ defmodule SlackMessengerWeb.MessageLive.Index do
     |> assign(:page_title, "Listing Messages")
     |> assign(:message, nil)
     |> assign(:slack_channel_id, slack_channel_id)
+    |> assign(channel_id: channel_id)
   end
 
   defp apply_action(socket, :index, _params) do
@@ -42,7 +47,7 @@ defmodule SlackMessengerWeb.MessageLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    message = Messages.get_message!(id)
+    message = Messages.get_message_preload_channel!(id)
     {:ok, _} = Messages.delete_message(message)
 
     {:noreply, assign(socket, :messages, list_messages())}

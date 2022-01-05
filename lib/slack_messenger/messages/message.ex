@@ -5,6 +5,7 @@ defmodule SlackMessenger.Messages.Message do
   schema "messages" do
     field :body, :string
     field :subject, :string
+    field :ts, :string
 
     timestamps()
 
@@ -14,7 +15,13 @@ defmodule SlackMessenger.Messages.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:subject, :body, :channel_id])
+    |> cast(attrs, [:subject, :body, :ts, :channel_id])
     |> validate_required([:subject, :body, :channel_id])
+  end
+
+  @doc false
+  def update_changeset(message, attrs) do
+    message
+    |> cast(attrs, [:ts])
   end
 end

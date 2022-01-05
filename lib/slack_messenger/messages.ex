@@ -6,8 +6,8 @@ defmodule SlackMessenger.Messages do
   import Ecto.Query, warn: false
   alias SlackMessenger.Repo
 
-  alias SlackMessenger.Messages.Message
-  alias SlackMessenger.SlackApiClient
+  alias SlackMessenger.{Messages.Message, Channels.Channel}
+  alias SlackMessenger.{SlackApiClient, Response}
 
   @doc """
   Returns the list of messages.
@@ -37,6 +37,7 @@ defmodule SlackMessenger.Messages do
 
   """
   def get_message!(id), do: Repo.get!(Message, id)
+  def get_message_preload_channel!(id), do: Repo.get!(Message, id) |> Repo.preload(:channel)
 
   @doc """
   Creates a message.
@@ -57,13 +58,19 @@ defmodule SlackMessenger.Messages do
     |> post_to_slack(attrs)
   end
 
-  defp post_to_slack({:ok, %Message{subject: subject, body: body}} = response, %{
+  defp post_to_slack({:ok, %Message{subject: subject, body: body} = message} = _ecto_response, %{
          "slack_channel_id" => slack_channel_id
        }) do
-    slack_channel_id |> SlackApiClient.post_message("subject: #{subject}; body: #{body}")
+    %Response{body: %{"ts" => message_timestamp} = _body} =
+      slack_channel_id
+      |> SlackApiClient.post_message("subject: #{subject}; body: #{body}")
 
-    response
+    {:ok, %Message{}} = update_response = update_message(message, %{"ts" => message_timestamp})
+
+    update_response
   end
+
+  defp post_to_slack({:error, _changeset} = ecto_response, _params), do: ecto_response
 
   @doc """
   Updates a message.
@@ -79,7 +86,7 @@ defmodule SlackMessenger.Messages do
   """
   def update_message(%Message{} = message, attrs) do
     message
-    |> Message.changeset(attrs)
+    |> Message.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -95,7 +102,13 @@ defmodule SlackMessenger.Messages do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_message(%Message{} = message) do
+  def delete_message(
+        %Message{ts: message_timestamp, channel: %Channel{slack_channel_id: slack_channel_id}} =
+          message
+      ) do
+    SlackApiClient.delete_message(slack_channel_id, message_timestamp)
+    |> IO.inspect(label: "SlackApiClient.delete_message")
+
     Repo.delete(message)
   end
 
