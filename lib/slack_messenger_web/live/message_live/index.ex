@@ -1,12 +1,11 @@
 defmodule SlackMessengerWeb.MessageLive.Index do
   use SlackMessengerWeb, :live_view
 
-  alias SlackMessenger.Messages
-  alias SlackMessenger.Messages.Message
+  alias SlackMessenger.{Messages, Messages.Message, Channels, Channels.Channel}
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :messages, list_messages())}
+    {:ok, socket |> assign(:messages, list_messages()) |> assign(slack_channel_id: nil)}
   end
 
   @impl true
@@ -26,10 +25,13 @@ defmodule SlackMessengerWeb.MessageLive.Index do
     |> assign(:message, %Message{})
   end
 
-  defp apply_action(socket, :index, _params) do
+  defp apply_action(socket, :index, %{"channel_id" => channel_id}) do
+    %Channel{slack_channel_id: slack_channel_id} = Channels.get_channel!(channel_id)
+
     socket
     |> assign(:page_title, "Listing Messages")
     |> assign(:message, nil)
+    |> assign(:slack_channel_id, slack_channel_id)
   end
 
   @impl true
