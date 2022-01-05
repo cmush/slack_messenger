@@ -7,6 +7,7 @@ defmodule SlackMessenger.Channels do
   alias SlackMessenger.Repo
 
   alias SlackMessenger.Channels.Channel
+  alias SlackMessenger.{SlackApiClient, Response}
 
   @doc """
   Returns the list of channels.
@@ -53,6 +54,18 @@ defmodule SlackMessenger.Channels do
     %Channel{}
     |> Channel.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def sync_channels() do
+    %Response{
+      headers: _headers,
+      body: %{"ok" => true, "channels" => channels},
+      status: 200
+    } = SlackApiClient.list_public_channels()
+
+    Enum.map(channels, fn %{"id" => slack_channel_id, "name" => name} ->
+      %{"slack_channel_id" => slack_channel_id, "name" => name} |> create_channel()
+    end)
   end
 
   @doc """

@@ -1,8 +1,7 @@
 defmodule SlackMessengerWeb.ChannelLive.Index do
   use SlackMessengerWeb, :live_view
 
-  alias SlackMessenger.Channels
-  alias SlackMessenger.Channels.Channel
+  alias SlackMessenger.{Channels, Channels.Channel}
 
   @impl true
   def mount(_params, _session, socket) do
@@ -37,6 +36,12 @@ defmodule SlackMessengerWeb.ChannelLive.Index do
     channel = Channels.get_channel!(id)
     {:ok, _} = Channels.delete_channel(channel)
 
+    {:noreply, assign(socket, :channels, list_channels())}
+  end
+
+  @impl true
+  def handle_event("list_public_channels", _params, socket) do
+    Channels.sync_channels()
     {:noreply, assign(socket, :channels, list_channels())}
   end
 
