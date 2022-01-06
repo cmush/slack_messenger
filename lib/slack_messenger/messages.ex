@@ -76,17 +76,6 @@ defmodule SlackMessenger.Messages do
     |> Repo.insert()
   end
 
-  def post_to_slack(%Message{subject: subject, body: body} = message, slack_channel_id)
-      when is_binary(slack_channel_id) do
-    %Response{body: %{"ts" => message_timestamp} = _body} =
-      slack_channel_id
-      |> SlackApiClient.post_message("subject: #{subject}; body: #{body}")
-
-    {:ok, %Message{}} = update_response = update_message(message, %{"ts" => message_timestamp})
-
-    update_response
-  end
-
   @doc """
   Updates a message.
 
@@ -119,11 +108,6 @@ defmodule SlackMessenger.Messages do
   """
   def delete_message(%Message{} = message) do
     Repo.delete(message)
-  end
-
-  def delete_from_slack(slack_channel_id, message_timestamp)
-      when is_binary(slack_channel_id) and is_binary(message_timestamp) do
-    %Response{} = SlackApiClient.delete_message(slack_channel_id, message_timestamp)
   end
 
   @doc """

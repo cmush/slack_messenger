@@ -2,6 +2,7 @@ defmodule SlackMessengerWeb.MessageLive.Index do
   use SlackMessengerWeb, :live_view
 
   alias SlackMessenger.{Messages, Messages.Message, Channels, Channels.Channel}
+  alias SlackMessenger.{SlackApiClient, Response}
 
   @impl true
   def mount(_params, _session, socket) do
@@ -47,14 +48,12 @@ defmodule SlackMessengerWeb.MessageLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    message = Messages.get_message_preload_channel!(id)
-
-    {:ok, %Message{ts: message_timestamp, channel: %Channel{slack_channel_id: slack_channel_id}}} =
-      Messages.delete_message(message)
-
-    Messages.delete_from_slack(slack_channel_id, message_timestamp)
-
-    {:noreply, assign(socket, :messages, list_messages())}
+    with {:ok,
+          %Message{ts: message_timestamp, channel: %Channel{slack_channel_id: slack_channel_id}}} <-
+           Messages.get_message_preload_channel!(id) |> Messages.delete_message(),
+         %Response{} = SlackApiClient.delete_message(slack_channel_id, message_timestamp) do
+      {:noreply, assign(socket, :messages, list_messages())}
+    end
   end
 
   @impl true
