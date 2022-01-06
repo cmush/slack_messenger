@@ -1,29 +1,39 @@
-<div>
-  <h1>All Channels</h1>
-  <span><button class="btn" phx-click="list_public_channels">List Public Channels</button></span>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h4 class="fw-normal">SlackMessenger</h4>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">Home</li>
+          <li class="breadcrumb-item active" aria-current="page">Channels</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col-md-12">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody id="channels">
+          <%= for channel <- @channels do %>
+          <tr id={"channel-#{channel.id}"}>
+            <td><%= channel.slack_channel_id %></td>
+            <td><%= channel.name %></td>
+
+            <td>
+              <span>
+                <button class="btn btn-primary" phx-click="open" phx-value-channel_id={ channel.id }>Open</button>
+              </span>
+            </td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="channels">
-    <%= for channel <- @channels do %>
-    <tr id={"channel-#{channel.id}"}>
-      <td><%= channel.slack_channel_id %></td>
-      <td><%= channel.name %></td>
-
-      <td>
-        <span>
-          <button class="btn" phx-click="open" phx-value-channel_id={ channel.id }>Open</button>
-        </span>
-      </td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>

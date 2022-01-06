@@ -1,45 +1,52 @@
-<div>
-  <h1>Listing Messages</h1>
-  <span><%= live_patch "New Message", to: Routes.message_index_path(@socket, :new) %></span>
-  <button class="btn" phx-click="fetch_all_messages">Fetch All Messages</button>
-</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 d-flex flex-direction align-items-center">
+      <div class="flex-fill">
+        <h4 class="fw-normal">SlackMessenger</h4>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item active" aria-current="page">Messages</li>
+          </ol>
+        </nav>
+      </div>
+      <%= live_patch "Send New Message", class: "btn btn-primary me-2", to: Routes.message_index_path(@socket, :new) %>
+      <button class="btn btn-primary" phx-click="fetch_all_messages">Fetch All Messages</button>
+    </div>
 
-<%= if @live_action in [:new, :edit] do %>
-  <.modal return_to={Routes.message_index_path(@socket, :index)}>
-    <.live_component
-      module={SlackMessengerWeb.MessageLive.FormComponent}
-      id={@message.id || :new}
-      title={@page_title}
-      action={@live_action}
-      message={@message}
-      channel_id={@channel_id}
-      slack_channel_id={@slack_channel_id}
-      return_to={Routes.message_index_path(@socket, :index)}
-    />
-  </.modal>
-<% end %>
-
-<table>
-  <thead>
-    <tr>
-      <th>Subject</th>
-      <th>Body</th>
-
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="messages">
-    <%= for message <- @messages do %>
-      <tr id={"message-#{message.id}"}>
-        <td><%= message.subject %></td>
-        <td><%= message.body %></td>
-
-        <td>
-          <span><%= live_redirect "Show", to: Routes.message_show_path(@socket, :show, message) %></span>
-          <span><%= live_patch "Edit", to: Routes.message_index_path(@socket, :edit, message) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: message.id, data: [confirm: "Are you sure?"] %></span>
-        </td>
-      </tr>
+    <%= if @live_action in [:new, :edit] do %>
+    <.modal return_to={Routes.message_index_path(@socket, :index)}>
+      <.live_component module={SlackMessengerWeb.MessageLive.FormComponent} id={@message.id || :new} title={@page_title}
+        action={@live_action} message={@message} channel_id={@channel_id} slack_channel_id={@slack_channel_id}
+        return_to={Routes.message_index_path(@socket, :index)} />
+    </.modal>
     <% end %>
-  </tbody>
-</table>
+    <div class="col-md-12">
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th scope="col">Subject</th>
+            <th scope="col">Body</th>
+
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody id="messages">
+          <%= for message <- @messages do %>
+          <tr id={"message-#{message.id}"}>
+            <td><%= message.subject %></td>
+            <td><%= message.body %></td>
+
+            <td>
+              <span><%= live_redirect "Show", class: "btn btn-primary", to: Routes.message_show_path(@socket, :show, message) %></span>
+              <!-- <span><%= live_patch "Edit", to: Routes.message_index_path(@socket, :edit, message) %></span> -->
+              <span><%= link "Delete", class: "btn btn-danger", to: "#", phx_click: "delete", phx_value_id: message.id, data: [confirm: "Are you sure?"] %></span>
+            </td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

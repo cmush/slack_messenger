@@ -25,7 +25,12 @@ config :slack_messenger, SlackMessengerWeb.Endpoint,
   secret_key_base: "dbGLFgmmd5yBJ1f9nboCVCwS05zx8eDLKgtBxx+t/TW5Pba2CsOS+XwZlsa9WeXH",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    sass: {
+      DartSass,
+      :install_and_run,
+      [:default, ~w(--embed-source-map --source-map-urls=absolute --watch)]
+    }
   ]
 
 # ## SSL Support
