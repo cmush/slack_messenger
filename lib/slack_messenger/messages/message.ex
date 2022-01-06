@@ -17,6 +17,10 @@ defmodule SlackMessenger.Messages.Message do
     message
     |> cast(attrs, [:subject, :body, :ts, :channel_id])
     |> validate_required([:subject, :body, :channel_id])
+    |> unique_constraint(:ts,
+      name: :messages_ts_index,
+      message: "message already added"
+    )
   end
 
   @doc false

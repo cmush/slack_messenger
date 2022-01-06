@@ -1,4 +1,8 @@
-<h1>Listing Messages</h1>
+<div>
+  <h1>Listing Messages</h1>
+  <span><%= live_patch "New Message", to: Routes.message_index_path(@socket, :new) %></span>
+  <button class="btn" phx-click="fetch_all_messages">Fetch All Messages</button>
+</div>
 
 <%= if @live_action in [:new, :edit] do %>
   <.modal return_to={Routes.message_index_path(@socket, :index)}>
@@ -39,5 +43,3 @@
     <% end %>
   </tbody>
 </table>
-
-<span><%= live_patch "New Message", to: Routes.message_index_path(@socket, :new) %></span>

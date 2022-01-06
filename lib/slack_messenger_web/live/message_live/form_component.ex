@@ -44,15 +44,14 @@ defmodule SlackMessengerWeb.MessageLive.FormComponent do
     message_params =
       message_params
       |> Map.put("channel_id", socket.assigns.channel_id)
-      |> Map.put("slack_channel_id", socket.assigns.slack_channel_id)
 
-    case Messages.create_message(message_params) do
-      {:ok, _message} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Message created successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
+    with {:ok, message} <- Messages.create_message(message_params),
+         {:ok, _message} <- Messages.post_to_slack(message, socket.assigns.slack_channel_id) do
+      {:noreply,
+       socket
+       |> put_flash(:info, "Message created successfully")
+       |> push_redirect(to: socket.assigns.return_to)}
+    else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end

@@ -48,8 +48,18 @@ defmodule SlackMessengerWeb.MessageLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     message = Messages.get_message_preload_channel!(id)
-    {:ok, _} = Messages.delete_message(message)
 
+    {:ok, %Message{ts: message_timestamp, channel: %Channel{slack_channel_id: slack_channel_id}}} =
+      Messages.delete_message(message)
+
+    Messages.delete_from_slack(slack_channel_id, message_timestamp)
+
+    {:noreply, assign(socket, :messages, list_messages())}
+  end
+
+  @impl true
+  def handle_event("fetch_all_messages", _params, socket) do
+    Messages.sync_messages(socket.assigns.channel_id, socket.assigns.slack_channel_id)
     {:noreply, assign(socket, :messages, list_messages())}
   end
 

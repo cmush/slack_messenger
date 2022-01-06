@@ -6,7 +6,7 @@ defmodule SlackMessenger.Messages do
   import Ecto.Query, warn: false
   alias SlackMessenger.Repo
 
-  alias SlackMessenger.{Messages.Message, Channels.Channel}
+  alias SlackMessenger.Messages.Message
   alias SlackMessenger.{SlackApiClient, Response}
 
   @doc """
@@ -20,6 +20,25 @@ defmodule SlackMessenger.Messages do
   """
   def list_messages do
     Repo.all(Message)
+  end
+
+  def sync_messages(channel_id, slack_channel_id)
+      when is_binary(channel_id) and is_binary(slack_channel_id) do
+    %Response{
+      headers: _headers,
+      body: %{"ok" => true, "messages" => messages},
+      status: 200
+    } = SlackApiClient.conversations_history(slack_channel_id)
+
+    Enum.map(messages, fn %{"text" => text, "ts" => message_timestamp} ->
+      %{
+        "body" => text,
+        "subject" => "sample subject",
+        "ts" => message_timestamp,
+        "channel_id" => channel_id
+      }
+      |> create_message()
+    end)
   end
 
   @doc """
@@ -55,12 +74,10 @@ defmodule SlackMessenger.Messages do
     %Message{}
     |> Message.changeset(attrs)
     |> Repo.insert()
-    |> post_to_slack(attrs)
   end
 
-  defp post_to_slack({:ok, %Message{subject: subject, body: body} = message} = _ecto_response, %{
-         "slack_channel_id" => slack_channel_id
-       }) do
+  def post_to_slack(%Message{subject: subject, body: body} = message, slack_channel_id)
+      when is_binary(slack_channel_id) do
     %Response{body: %{"ts" => message_timestamp} = _body} =
       slack_channel_id
       |> SlackApiClient.post_message("subject: #{subject}; body: #{body}")
@@ -69,8 +86,6 @@ defmodule SlackMessenger.Messages do
 
     update_response
   end
-
-  defp post_to_slack({:error, _changeset} = ecto_response, _params), do: ecto_response
 
   @doc """
   Updates a message.
@@ -102,12 +117,13 @@ defmodule SlackMessenger.Messages do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_message(
-        %Message{ts: message_timestamp, channel: %Channel{slack_channel_id: slack_channel_id}} =
-          message
-      ) do
-    %Response{} = SlackApiClient.delete_message(slack_channel_id, message_timestamp)
+  def delete_message(%Message{} = message) do
     Repo.delete(message)
+  end
+
+  def delete_from_slack(slack_channel_id, message_timestamp)
+      when is_binary(slack_channel_id) and is_binary(message_timestamp) do
+    %Response{} = SlackApiClient.delete_message(slack_channel_id, message_timestamp)
   end
 
   @doc """
