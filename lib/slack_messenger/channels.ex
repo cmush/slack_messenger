@@ -63,8 +63,9 @@ defmodule SlackMessenger.Channels do
       status: 200
     } = SlackApiClient.list_public_channels()
 
-    Enum.map(channels, fn %{"id" => slack_channel_id, "name" => name} ->
-      %{"slack_channel_id" => slack_channel_id, "name" => name} |> create_channel()
+    Enum.map(channels, fn %{"id" => slack_channel_id, "name" => name, "is_member" => is_member} ->
+      if is_member,
+        do: %{"slack_channel_id" => slack_channel_id, "name" => name} |> create_channel()
     end)
   end
 
