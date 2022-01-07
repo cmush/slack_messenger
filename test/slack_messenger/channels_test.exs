@@ -34,7 +34,11 @@ defmodule SlackMessenger.ChannelsTest do
 
     test "update_channel/2 with valid data updates the channel" do
       channel = channel_fixture()
-      update_attrs = %{name: "some updated name", slack_channel_id: "some updated slack_channel_id"}
+
+      update_attrs = %{
+        name: "some updated name",
+        slack_channel_id: "some updated slack_channel_id"
+      }
 
       assert {:ok, %Channel{} = channel} = Channels.update_channel(channel, update_attrs)
       assert channel.name == "some updated name"
