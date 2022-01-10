@@ -2,7 +2,6 @@ defmodule SlackMessenger.MessagesTest do
   use SlackMessenger.DataCase
 
   alias SlackMessenger.Messages
-  alias SlackMessenger.Factory
 
   setup do
     channel = insert!(:channel)
