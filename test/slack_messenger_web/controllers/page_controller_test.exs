@@ -3,6 +3,9 @@ defmodule SlackMessengerWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Welcome to Phoenix!"
+    assert html_response(conn, 200) =~ "SlackMessenger"
+    assert html_response(conn, 200) =~ "Home"
+    assert html_response(conn, 200) =~ "Dashboard"
+    assert html_response(conn, 200) =~ "Open Channels"
   end
 end

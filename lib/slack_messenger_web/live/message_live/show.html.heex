@@ -1,31 +1,39 @@
-<h1>Show Message</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 d-flex flex-direction align-items-center">
+      <div class="flex-fill">
+        <h4 class="fw-normal">SlackMessenger</h4>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item active" aria-current="page">Show Message</li>
+          </ol>
+        </nav>
+      </div>
+      <span><%= live_redirect "Back", class: "btn btn-primary", to: Routes.message_index_path(@socket, :index) %></span>
+      <!-- <span><%= live_patch "Edit", to: Routes.message_show_path(@socket, :edit, @message), class: "button" %></span> | -->
+    </div>
 
-<%= if @live_action in [:edit] do %>
-  <.modal return_to={Routes.message_show_path(@socket, :show, @message)}>
-    <.live_component
-      module={SlackMessengerWeb.MessageLive.FormComponent}
-      id={@message.id}
-      title={@page_title}
-      action={@live_action}
-      message={@message}
-      return_to={Routes.message_show_path(@socket, :show, @message)}
-    />
-  </.modal>
-<% end %>
+    <%= if @live_action in [:edit] do %>
+    <.modal return_to={Routes.message_show_path(@socket, :show, @message)}>
+      <.live_component module={SlackMessengerWeb.MessageLive.FormComponent} id={@message.id} title={@page_title}
+        action={@live_action} message={@message} return_to={Routes.message_show_path(@socket, :show, @message)} />
+    </.modal>
+    <% end %>
 
-<ul>
+    <ul>
 
-  <li>
-    <strong>Subject:</strong>
-    <%= @message.subject %>
-  </li>
+      <li>
+        <strong>Subject:</strong>
+        <%= @message.subject %>
+      </li>
 
-  <li>
-    <strong>Body:</strong>
-    <%= @message.body %>
-  </li>
+      <li>
+        <strong>Body:</strong>
+        <%= @message.body %>
+      </li>
 
-</ul>
+    </ul>
 
-<span><%= live_patch "Edit", to: Routes.message_show_path(@socket, :edit, @message), class: "button" %></span> |
-<span><%= live_redirect "Back", to: Routes.message_index_path(@socket, :index) %></span>
+  </div>
+</div>

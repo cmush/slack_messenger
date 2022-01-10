@@ -1,5 +1,10 @@
 {
     "scripts": {
         "deploy": "cd .. && mix assets.deploy && rm -f _build/esbuild*"
+    },
+    "devDependencies": {
+        "@popperjs/core": "^2.11.2",
+        "bootstrap": "^5.1.3",
+        "topbar": "^1.0.1"
     }
 }

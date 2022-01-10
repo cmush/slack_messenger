@@ -35,18 +35,22 @@ defmodule SlackMessengerWeb.LiveHelpers do
         phx-window-keydown={JS.dispatch("click", to: "#close")}
         phx-key="escape"
       >
-        <%= if @return_to do %>
-          <%= live_patch "✖",
-            to: @return_to,
-            id: "close",
-            class: "phx-modal-close",
-            phx_click: hide_modal()
-          %>
-        <% else %>
-         <a id="close" href="#" class="phx-modal-close" phx-click={hide_modal()}>✖</a>
-        <% end %>
-
-        <%= render_slot(@inner_block) %>
+        <div class="modal-header">
+          <%= if @return_to do %>
+            <%= live_patch "✖",
+              to: @return_to,
+              id: "close",
+              class: "phx-modal-close",
+              phx_click: hide_modal()
+            %>
+          <% else %>
+          <a id="close" href="#" class="phx-modal-close" phx-click={hide_modal()}>✖</a>
+          <% end %>
+        </div>
+        <div class="modal-body">
+          <%= render_slot(@inner_block) %>
+        </div>
+        <%= inspect(@inner_block) %>
       </div>
     </div>
     """

@@ -2,6 +2,7 @@ defmodule SlackMessengerWeb.MessageLive.FormComponent do
   use SlackMessengerWeb, :live_component
 
   alias SlackMessenger.Messages
+  alias SlackMessenger.{SlackApiClient, Response}
 
   @impl true
   def update(%{message: message} = assigns, socket) do
@@ -40,14 +41,32 @@ defmodule SlackMessengerWeb.MessageLive.FormComponent do
     end
   end
 
-  defp save_message(socket, :new, message_params) do
-    case Messages.create_message(message_params) do
-      {:ok, _message} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Message created successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
+  defp save_message(socket, :new, %{"subject" => subject, "body" => body} = message_params) do
+    with %Response{
+           body: %{
+             "channel" => _channel_id,
+             "message" => %{
+               "bot_id" => _bot_id,
+               "text" => _text,
+               "ts" => message_timestamp,
+               "type" => "message"
+             },
+             "ok" => true
+           }
+         } <-
+           socket.assigns.slack_channel_id
+           |> SlackApiClient.post_message("subject: #{subject}; body: #{body}"),
+         {:ok, _message} <-
+           Messages.create_message(
+             message_params
+             |> Map.put("ts", message_timestamp)
+             |> Map.put("channel_id", socket.assigns.channel_id)
+           ) do
+      {:noreply,
+       socket
+       |> put_flash(:info, "Message created successfully")
+       |> push_redirect(to: "#{socket.assigns.return_to}?channel_id=#{socket.assigns.channel_id}")}
+    else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end

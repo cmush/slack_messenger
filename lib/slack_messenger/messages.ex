@@ -7,6 +7,7 @@ defmodule SlackMessenger.Messages do
   alias SlackMessenger.Repo
 
   alias SlackMessenger.Messages.Message
+  alias SlackMessenger.{SlackApiClient, Response}
 
   @doc """
   Returns the list of messages.
@@ -19,6 +20,25 @@ defmodule SlackMessenger.Messages do
   """
   def list_messages do
     Repo.all(Message)
+  end
+
+  def sync_messages(channel_id, slack_channel_id)
+      when is_binary(channel_id) and is_binary(slack_channel_id) do
+    %Response{
+      headers: _headers,
+      body: %{"ok" => true, "messages" => messages},
+      status: 200
+    } = SlackApiClient.conversations_history(slack_channel_id)
+
+    Enum.map(messages, fn %{"text" => text, "ts" => message_timestamp} ->
+      %{
+        "body" => text,
+        "subject" => "sample subject",
+        "ts" => message_timestamp,
+        "channel_id" => channel_id
+      }
+      |> create_message()
+    end)
   end
 
   @doc """
@@ -36,6 +56,7 @@ defmodule SlackMessenger.Messages do
 
   """
   def get_message!(id), do: Repo.get!(Message, id)
+  def get_message_preload_channel!(id), do: Repo.get!(Message, id) |> Repo.preload(:channel)
 
   @doc """
   Creates a message.
@@ -69,7 +90,7 @@ defmodule SlackMessenger.Messages do
   """
   def update_message(%Message{} = message, attrs) do
     message
-    |> Message.changeset(attrs)
+    |> Message.update_changeset(attrs)
     |> Repo.update()
   end
 

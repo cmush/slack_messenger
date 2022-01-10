@@ -25,6 +25,13 @@ defmodule SlackMessengerWeb.Router do
 
     live "/messages/:id", MessageLive.Show, :show
     live "/messages/:id/show/edit", MessageLive.Show, :edit
+
+    live "/channels", ChannelLive.Index, :index
+    live "/channels/new", ChannelLive.Index, :new
+    live "/channels/:id/edit", ChannelLive.Index, :edit
+
+    live "/channels/:id", ChannelLive.Show, :show
+    live "/channels/:id/show/edit", ChannelLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

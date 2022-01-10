@@ -1,30 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
   <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <%= csrf_meta_tag() %>
-    <%= live_title_tag assigns[:page_title] || "SlackMessenger", suffix: " · Phoenix Framework" %>
+    <%= live_title_tag assigns[:page_title] || "SlackMessenger", suffix: " Phoenix Framework" %>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
-  <body>
-    <header>
-      <section class="container">
-        <nav>
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
+  <body class="d-flex flex-column h-100">
+    <nav class="shadow-sm navbar navbar-expand-md navbar-light bg-light fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">SlackMessenger</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="main-navbar">
+          <ul class="mb-2 navbar-nav me-auto mb-md-0">
+            <li class="nav-item">
+              <%= link "Home", to: Routes.page_path(@conn, :index), class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= link "Channels", to: Routes.channel_index_path(@conn, :index), class: "nav-link" %>
+            </li>
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+              <li class="nav-item">
+                <%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home), class: "nav-link" %>
+              </li>
             <% end %>
           </ul>
-        </nav>
-        <a href="https://phoenixframework.org/" class="phx-logo">
-          <img src={Routes.static_path(@conn, "/images/phoenix.png")} alt="Phoenix Framework Logo"/>
-        </a>
-      </section>
-    </header>
+        </div>
+      </div>
+    </nav>
+
     <%= @inner_content %>
+
+    <footer class="py-3 mt-auto footer bg-dark">
+      <div class="container text-sm text-center text-light">
+        &copy; <%= DateTime.utc_now.year %> SlackMessenger
+      </div>
+    </footer>
   </body>
 </html>

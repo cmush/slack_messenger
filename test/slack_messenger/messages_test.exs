@@ -3,25 +3,27 @@ defmodule SlackMessenger.MessagesTest do
 
   alias SlackMessenger.Messages
 
+  setup do
+    channel = insert!(:channel)
+    message = insert!(:message, channel_id: channel.id)
+    [channel: channel, message: message]
+  end
+
   describe "messages" do
     alias SlackMessenger.Messages.Message
 
-    import SlackMessenger.MessagesFixtures
+    @invalid_attrs %{ts: 120}
 
-    @invalid_attrs %{body: nil, subject: nil}
-
-    test "list_messages/0 returns all messages" do
-      message = message_fixture()
+    test "list_messages/0 returns all messages", %{message: message} do
       assert Messages.list_messages() == [message]
     end
 
-    test "get_message!/1 returns the message with given id" do
-      message = message_fixture()
+    test "get_message!/1 returns the message with given id", %{message: message} do
       assert Messages.get_message!(message.id) == message
     end
 
-    test "create_message/1 with valid data creates a message" do
-      valid_attrs = %{body: "some body", subject: "some subject"}
+    test "create_message/1 with valid data creates a message", %{channel: channel} do
+      valid_attrs = %{body: "some body", subject: "some subject", channel_id: channel.id}
 
       assert {:ok, %Message{} = message} = Messages.create_message(valid_attrs)
       assert message.body == "some body"
@@ -32,29 +34,24 @@ defmodule SlackMessenger.MessagesTest do
       assert {:error, %Ecto.Changeset{}} = Messages.create_message(@invalid_attrs)
     end
 
-    test "update_message/2 with valid data updates the message" do
-      message = message_fixture()
-      update_attrs = %{body: "some updated body", subject: "some updated subject"}
+    test "update_message/2 with valid data updates the message", %{message: message} do
+      update_attrs = %{ts: "1641389759.000200"}
 
       assert {:ok, %Message{} = message} = Messages.update_message(message, update_attrs)
-      assert message.body == "some updated body"
-      assert message.subject == "some updated subject"
+      assert message.ts == "1641389759.000200"
     end
 
-    test "update_message/2 with invalid data returns error changeset" do
-      message = message_fixture()
+    test "update_message/2 with invalid data returns error changeset", %{message: message} do
       assert {:error, %Ecto.Changeset{}} = Messages.update_message(message, @invalid_attrs)
       assert message == Messages.get_message!(message.id)
     end
 
-    test "delete_message/1 deletes the message" do
-      message = message_fixture()
+    test "delete_message/1 deletes the message", %{message: message} do
       assert {:ok, %Message{}} = Messages.delete_message(message)
       assert_raise Ecto.NoResultsError, fn -> Messages.get_message!(message.id) end
     end
 
-    test "change_message/1 returns a message changeset" do
-      message = message_fixture()
+    test "change_message/1 returns a message changeset", %{message: message} do
       assert %Ecto.Changeset{} = Messages.change_message(message)
     end
   end
