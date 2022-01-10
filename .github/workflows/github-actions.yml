@@ -23,8 +23,11 @@ jobs:
           otp-version: "24.1"
           elixir-version: "1.12.3"
           experimental-otp: true
+      - run: echo $SLACK_API_BASE_URL
+      - run: echo $SLACK_API_POOL_SIZE
+      - run: echo $SLACK_API_BOT_USER_OAUTH_TOKEN
       - run: mix deps.get
-      - run: mix test
+      - run: MIX_ENV=test mix test
         env:
           SLACK_API_BASE_URL: ${{ secrets.SLACK_API_BASE_URL }}
           SLACK_API_POOL_SIZE: ${{ secrets.SLACK_API_POOL_SIZE }}
