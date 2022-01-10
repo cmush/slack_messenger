@@ -53,7 +53,7 @@ jobs:
           GIGALIXIR_PASSWORD: ${{ secrets.GIGALIXIR_PASSWORD }}
           MIGRATIONS: false # defaults to true
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          # GIGALIXIR_CLEAN: true # defaults to false
+          GIGALIXIR_CLEAN: true # defaults to false
       - name: "Set App Envs"
         run: "gigalixir config:set SLACK_API_BASE_URL=$SLACK_API_BASE_URL SLACK_API_POOL_SIZE=$SLACK_API_POOL_SIZE SLACK_API_BOT_USER_OAUTH_TOKEN=$SLACK_API_BOT_USER_OAUTH_TOKEN"
         env:
