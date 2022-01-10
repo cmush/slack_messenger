@@ -13,8 +13,6 @@ defmodule SlackMessenger.MessagesTest do
   describe "messages" do
     alias SlackMessenger.Messages.Message
 
-    import SlackMessenger.MessagesFixtures
-
     @invalid_attrs %{ts: 120}
 
     test "list_messages/0 returns all messages", %{message: message} do

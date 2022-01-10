@@ -2,10 +2,8 @@ defmodule SlackMessengerWeb.ChannelLiveTest do
   use SlackMessengerWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import SlackMessenger.ChannelsFixtures
   import SlackMessenger.Factory
 
-  @create_attrs %{name: "some name", slack_channel_id: "some slack_channel_id"}
   @update_attrs %{name: "some updated name", slack_channel_id: "some updated slack_channel_id"}
   @invalid_attrs %{name: nil, slack_channel_id: nil}
 
