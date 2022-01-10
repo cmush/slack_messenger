@@ -3,13 +3,14 @@ defmodule SlackMessengerWeb.ChannelLiveTest do
 
   import Phoenix.LiveViewTest
   import SlackMessenger.ChannelsFixtures
+  import SlackMessenger.Factory
 
   @create_attrs %{name: "some name", slack_channel_id: "some slack_channel_id"}
   @update_attrs %{name: "some updated name", slack_channel_id: "some updated slack_channel_id"}
   @invalid_attrs %{name: nil, slack_channel_id: nil}
 
   defp create_channel(_) do
-    channel = channel_fixture()
+    channel = insert!(:channel)
     %{channel: channel}
   end
 
@@ -21,57 +22,6 @@ defmodule SlackMessengerWeb.ChannelLiveTest do
 
       assert html =~ "Listing Channels"
       assert html =~ channel.name
-    end
-
-    test "saves new channel", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.channel_index_path(conn, :index))
-
-      assert index_live |> element("a", "New Channel") |> render_click() =~
-               "New Channel"
-
-      assert_patch(index_live, Routes.channel_index_path(conn, :new))
-
-      assert index_live
-             |> form("#channel-form", channel: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _, html} =
-        index_live
-        |> form("#channel-form", channel: @create_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, Routes.channel_index_path(conn, :index))
-
-      assert html =~ "Channel created successfully"
-      assert html =~ "some name"
-    end
-
-    test "updates channel in listing", %{conn: conn, channel: channel} do
-      {:ok, index_live, _html} = live(conn, Routes.channel_index_path(conn, :index))
-
-      assert index_live |> element("#channel-#{channel.id} a", "Edit") |> render_click() =~
-               "Edit Channel"
-
-      assert_patch(index_live, Routes.channel_index_path(conn, :edit, channel))
-
-      assert index_live
-             |> form("#channel-form", channel: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _, html} =
-        index_live
-        |> form("#channel-form", channel: @update_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, Routes.channel_index_path(conn, :index))
-
-      assert html =~ "Channel updated successfully"
-      assert html =~ "some updated name"
-    end
-
-    test "deletes channel in listing", %{conn: conn, channel: channel} do
-      {:ok, index_live, _html} = live(conn, Routes.channel_index_path(conn, :index))
-
-      assert index_live |> element("#channel-#{channel.id} a", "Delete") |> render_click()
-      refute has_element?(index_live, "#channel-#{channel.id}")
     end
   end
 

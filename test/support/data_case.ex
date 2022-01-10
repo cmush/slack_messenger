@@ -24,6 +24,7 @@ defmodule SlackMessenger.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import SlackMessenger.DataCase
+      import SlackMessenger.Factory
     end
   end
 

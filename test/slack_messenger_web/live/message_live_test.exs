@@ -2,15 +2,15 @@ defmodule SlackMessengerWeb.MessageLiveTest do
   use SlackMessengerWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import SlackMessenger.MessagesFixtures
+  import SlackMessenger.Factory
 
   @create_attrs %{body: "some body", subject: "some subject"}
-  @update_attrs %{body: "some updated body", subject: "some updated subject"}
   @invalid_attrs %{body: nil, subject: nil}
 
   defp create_message(_) do
-    message = message_fixture()
-    %{message: message}
+    channel = insert!(:channel)
+    message = insert!(:message, channel_id: channel.id)
+    %{channel: channel, message: message}
   end
 
   describe "Index" do
@@ -23,8 +23,9 @@ defmodule SlackMessengerWeb.MessageLiveTest do
       assert html =~ message.body
     end
 
-    test "saves new message", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.message_index_path(conn, :index))
+    test "saves new message", %{conn: conn, channel: channel} do
+      {:ok, index_live, _html} =
+        live(conn, Routes.message_index_path(conn, :index, channel_id: channel.id))
 
       assert index_live |> element("a", "New Message") |> render_click() =~
                "New Message"
@@ -39,32 +40,10 @@ defmodule SlackMessengerWeb.MessageLiveTest do
         index_live
         |> form("#message-form", message: @create_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.message_index_path(conn, :index))
+        |> follow_redirect(conn, Routes.message_index_path(conn, :index, channel_id: channel.id))
 
       assert html =~ "Message created successfully"
-      assert html =~ "some body"
-    end
-
-    test "updates message in listing", %{conn: conn, message: message} do
-      {:ok, index_live, _html} = live(conn, Routes.message_index_path(conn, :index))
-
-      assert index_live |> element("#message-#{message.id} a", "Edit") |> render_click() =~
-               "Edit Message"
-
-      assert_patch(index_live, Routes.message_index_path(conn, :edit, message))
-
-      assert index_live
-             |> form("#message-form", message: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _, html} =
-        index_live
-        |> form("#message-form", message: @update_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, Routes.message_index_path(conn, :index))
-
-      assert html =~ "Message updated successfully"
-      assert html =~ "some updated body"
+      assert html =~ "test body"
     end
 
     test "deletes message in listing", %{conn: conn, message: message} do
@@ -83,28 +62,6 @@ defmodule SlackMessengerWeb.MessageLiveTest do
 
       assert html =~ "Show Message"
       assert html =~ message.body
-    end
-
-    test "updates message within modal", %{conn: conn, message: message} do
-      {:ok, show_live, _html} = live(conn, Routes.message_show_path(conn, :show, message))
-
-      assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Message"
-
-      assert_patch(show_live, Routes.message_show_path(conn, :edit, message))
-
-      assert show_live
-             |> form("#message-form", message: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _, html} =
-        show_live
-        |> form("#message-form", message: @update_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, Routes.message_show_path(conn, :show, message))
-
-      assert html =~ "Message updated successfully"
-      assert html =~ "some updated body"
     end
   end
 end

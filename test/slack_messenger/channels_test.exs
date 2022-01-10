@@ -2,6 +2,12 @@ defmodule SlackMessenger.ChannelsTest do
   use SlackMessenger.DataCase
 
   alias SlackMessenger.Channels
+  import SlackMessenger.Factory
+
+  setup do
+    channel = insert!(:channel)
+    [channel: channel]
+  end
 
   describe "channels" do
     alias SlackMessenger.Channels.Channel
@@ -10,13 +16,11 @@ defmodule SlackMessenger.ChannelsTest do
 
     @invalid_attrs %{name: nil, slack_channel_id: nil}
 
-    test "list_channels/0 returns all channels" do
-      channel = channel_fixture()
+    test "list_channels/0 returns all channels", %{channel: channel} do
       assert Channels.list_channels() == [channel]
     end
 
-    test "get_channel!/1 returns the channel with given id" do
-      channel = channel_fixture()
+    test "get_channel!/1 returns the channel with given id", %{channel: channel} do
       assert Channels.get_channel!(channel.id) == channel
     end
 
