@@ -10,7 +10,11 @@ defmodule SlackMessengerWeb.Endpoint do
     signing_salt: "q9Ki+XD+"
   ]
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [
+      connect_info: [session: @session_options],
+      check_origin: ["https://slack-messenger.gigalixirapp.com"]
+    ]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
