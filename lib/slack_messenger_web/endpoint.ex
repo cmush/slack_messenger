@@ -13,7 +13,7 @@ defmodule SlackMessengerWeb.Endpoint do
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [
       connect_info: [session: @session_options],
-      check_origin: ["https://slack-messenger.gigalixirapp.com"]
+      check_origin: ["https://slack-messenger.gigalixirapp.com", "http://localhost:4000", "http://127.0.0.1:4000"]
     ]
 
   # Serve at "/" the static files from "priv/static" directory.
